@@ -24,14 +24,38 @@ from snowflake.connector.pandas_tools import write_pandas
 # custom package is in '/elt/PyPkg/'
 sys.path.append('/elt/PyPkg/')
 # Import the custom utility functions
-from INT_SCO_DB_Connection import get_snowflake_conn
+from sf_conn_cls import VLFMSnowflakeConnection
 from Merge_def_tool import fetch_table_columns, generate_merge_sql
 
-#def snowflake_operations(**kwargs):
+
+
 try:
-    ctx = get_snowflake_conn()
+    # Initialize the connection
+    user = os.environ.get('SF_Connection_proc_acct')
+    schema_name = 'LANDING'
+    database_name = 'INT_SCO_DB'
+    LND_conn_details = {
+        "user": user,
+        "account": 'videotron-freedommobile',
+        "private_key_path_env_var": 'SF_Connection_PRIVATE_KEY_PATH',
+        "private_key_passphrase_env_var": 'SF_Connection_PRIVATE_KEY_PASSPHRASE',
+        "database": database_name,
+        "schema": schema_name
+    }
+
+    # Create a SnowflakeConnection instance and use it
+    LND_snowflake_conn = VLFMSnowflakeConnection(**LND_conn_details)
+    ctx = LND_snowflake_conn.connect()
     cs = ctx.cursor()
-    logging.info('SF connected')  # This won't be logged due to logging level
+    logging.info('SF connected')
+    print('SF connected')
+    
+
+    # Use `ctx` as needed...
+    #LND_cs = LND_ctx.cursor()
+    #LND_cs.execute("SELECT count(1) FROM INT_SCO_DB.LANDING.L0_WAREHOUSE_INVENTORY_EBS_DAILY;")
+    #result = LND_cs.fetch_pandas_all()
+    #print(result)
     
     # Load CSV data into DataFrame
     file_path = '/mnt/Reports/FreedomSFTP/GW_Inv/csv_inventory_availability.csv'
@@ -41,8 +65,6 @@ try:
     # Write DataFrame to a staging table
     staging_table = 'STAGE_L0_WAREHOUSE_INVENTORY_EBS_DAILY'
     target_table = 'L0_WAREHOUSE_INVENTORY_EBS_DAILY'
-    schema_name = 'LANDING'
-    database_name = 'INT_SCO_DB'
 
     success, nchunks, nrows, _ = write_pandas(ctx, df, f"{staging_table}")
     logging.info(f'DataFrame written to staging table with {nrows} rows in {nchunks} chunks.')  # This won't be logged
@@ -63,14 +85,11 @@ try:
     # execute turncate stage table
     cs.execute(f"TRUNCATE TABLE {database_name}.{schema_name}.{staging_table};")
     logging.info('Staging table truncated successfully.')  # This won't be logged
-
+    
+    # Close the connection when done
+    LND_snowflake_conn.close()
+    logging.info('SF disconnected')
+    print('SF disconnected')
+    
 except Exception as e:
     logging.error(f'An error occurred: {e}', exc_info=True)
-
-finally:
-    logging.info('Cleaning up resources...')  # This won't be logged
-    if ctx is not None:
-        ctx.close()
-            
-#if __name__ == "__main__":
-#    snowflake_operations()
