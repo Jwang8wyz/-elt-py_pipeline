@@ -48,12 +48,14 @@ class YAMLKeyPairManager:
         # since each key-value pair is stored in its own file.
         self.save_key_pair(key_name, new_value)
         
-# Example usage
-# if __name__ == "__main__":
-    # base_dir = "/elt/.syskey/kpmgr"
-    # encryption_key_path = "/elt/.syskey/encryption_key.key"
+#Example usage
+if __name__ == "__main__":
+    base_dir = "/elt/.syskey/kpmgr"
+    encryption_key_path = "/elt/.syskey/encryption_key.key"
 
-    # manager = YAMLKeyPairManager(base_dir, encryption_key_path)
-    # #manager.save_key_pair("test", "vltest")  # Save initial value
-    
-    # print(manager.retrieve_key_pair("test"))
+    manager = YAMLKeyPairManager(base_dir, encryption_key_path)
+    manager.save_key_pair("SF_Connection_PRIVATE_KEY_PASSPHRASE", "CafeLatte&80")  # Save initial value
+    manager.save_key_pair("SF_Connection_proc_acct", "proc_prd_sco_national_retail_tospcetlapp01")
+    manager.save_key_pair("SF_Connection_PRIVATE_KEY_PATH", "/elt/.syskey/10.200.12.6_rsa.p8")
+
+    #print(manager.retrieve_key_pair("test"))
