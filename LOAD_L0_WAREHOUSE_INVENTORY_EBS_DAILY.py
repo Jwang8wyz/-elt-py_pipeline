@@ -19,7 +19,7 @@ Logger_LND_L0_WAREHOUSE_INVENTORY_EBS_DAILY = LoggerSetup(app_name='LND_L0_WAREH
 Logger_LND_L0_WAREHOUSE_INVENTORY_EBS_DAILY.configure_logging()
 
 # test logging
-logging.error("This is test logging")
+#logging.error("This is test logging")
 
 try:
     #connect to snowflake
@@ -65,7 +65,12 @@ try:
     cs.execute(f"TRUNCATE TABLE {database_name}.{schema_name}.{staging_table};")
     logging.info('Staging table truncated successfully.')  # This won't be logged
     print('Staging table truncated successfully.')
-
+    
+    # execute run task to load to intergation
+    cs.execute("EXECUTE TASK INT_SCO_DB.INTEGRATION.LOAD_IINT_L0_WAREHOUSE_INVENTORY_EBS_DAILY;")
+    logging.info('run task to load to intergation successfully.')  # This won't be logged
+    print('run task to load to intergation successfully.')    
+    
 except Exception as e:
     logging.error(f'An error occurred: {e}', exc_info=True)
 
