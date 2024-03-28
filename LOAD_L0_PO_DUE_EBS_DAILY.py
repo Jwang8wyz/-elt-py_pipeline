@@ -84,9 +84,9 @@ try:
     cs.execute(f"TRUNCATE TABLE {database_name}.{schema_name}.{staging_table};")
     logging.info('Staging table truncated successfully.')  # This won't be logged
     print('Staging table truncated successfully.')
-    
+  
     # execute run task to load to intergation
-    cs.execute("EXECUTE TASK INT_SCO_DB.INTEGRATION.LOAD_INT_L0_PO_DUE_EBS_DAILY;")
+    cs.execute(f"EXECUTE TASK {database_name}.INTEGRATION.LOAD_INT_L0_PO_DUE_EBS_DAILY;")
     logging.info('run task to load to intergation successfully.')  # This won't be logged
     print('run task to load to intergation successfully.')    
     
