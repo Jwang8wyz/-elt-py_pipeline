@@ -32,7 +32,7 @@ try:
     print('SF_Connected')
     
     # load CSV data into DataFrame, convert it to utf-8
-    file_path = '/mnt/Reports/FreedomSFTP/GW_Inv/csv_inventory_availability.csv'
+    file_path = '/mnt1/JaysonReports/GW_Inv/csv_inventory_availability.csv'
     csv_inventory_file=File_utf8_Preprocessor(file_path,'|')
     csv_inventory_file.read_and_convert()
     df=csv_inventory_file.get_dataframe()
